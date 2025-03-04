@@ -1,0 +1,20 @@
+这是一个包含Unicode字符的测试文件
+用于测试CopyUtil处理Unicode字符的能力
+
+This is a test file with Unicode characters
+For testing CopyUtil's Unicode handling capability
+
+测试内容 / Test Content:
+
+1. Emojis:
+🌟 🌙 ☀️ 🌍 🌈
+
+2. 特殊Unicode字符 / Special Unicode Characters:
+♠ ♥ ♦ ♣
+☮ ☯ ☭ ✝
+
+3. 多语言支持 / Multi-language Support:
+你好，世界！(Chinese)
+こんにちは、世界！(Japanese)
+안녕하세요, 세계！(Korean)
+Bonjour, le monde！(French)

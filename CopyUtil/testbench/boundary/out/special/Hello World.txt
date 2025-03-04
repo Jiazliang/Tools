@@ -1,0 +1,12 @@
+This is a test file with spaces in its name.
+这是一个文件名包含空格的测试文件。
+
+Testing CopyUtil's ability to handle:
+- Filenames with spaces
+- Path parsing with spaces
+- Command line argument handling
+
+测试CopyUtil处理：
+- 带空格的文件名
+- 带空格的路径解析
+- 命令行参数处理

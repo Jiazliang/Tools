@@ -1,0 +1,10 @@
+这是一个基本的测试文件，用于验证CopyUtil的单文件复制功能。
+该文件包含一些中文字符和ASCII字符，以测试基本的文本复制功能。
+
+Basic test file for CopyUtil single file copy feature.
+This file contains both Chinese and ASCII characters to test basic text copy functionality.
+
+1234567890
+abcdefghijklmnopqrstuvwxyz
+ABCDEFGHIJKLMNOPQRSTUVWXYZ
+!@#$%^&*()_+-=[]{}|;:,.<>?

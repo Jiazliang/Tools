@@ -1,0 +1,13 @@
+这是一个多层目录中的测试文件
+用于测试CopyUtil的递归复制功能
+
+This is a test file in multi-level directory
+For testing CopyUtil's recursive copy feature
+
+包含一些基本的文本内容：
+Contains some basic text content:
+
+- 中文测试
+- English Test
+- 数字/Numbers: 12345
+- 特殊字符/Special chars: !@#$%
