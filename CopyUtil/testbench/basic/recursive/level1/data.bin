@@ -1,5 +1,0 @@
-BINARY_TEST_DATA
-This is a sample binary file for testing CopyUtil's binary file copy functionality.
-The content includes some non-printable characters and random data:
-x00x01x02x03x04xFFxFExFDxFCxFB
-x1Fx7Fx80x81x82x83x84x85x86x87
