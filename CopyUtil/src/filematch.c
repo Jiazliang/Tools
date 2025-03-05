@@ -139,22 +139,34 @@ static bool match_files_in_dir(const char* src_dir, const char* dest_dir,
             /* Handle directory | 处理目录 */
             if (options->recursive) {
                 stats->dir_count++;
-                /* Create destination directory | 创建目标目录 */
-                /* Convert destination path to wide characters | 转换目标路径为宽字符 */
-                WCHAR wdest_path[MAX_PATH];
-                MultiByteToWideChar(CP_UTF8, 0, dest_path, -1, wdest_path, MAX_PATH);
-                CreateDirectoryW(wdest_path, NULL);
                 /* Recursively process directory | 递归处理目录 */
-                if (!match_files_in_dir(src_path, dest_path, options, stats)) {
+                if (!match_files_in_dir(src_path, dest_dir, options, stats)) {
                     success = false;
                 }
             }
         } else {
             /* Handle file | 处理文件 */
             if (PathMatchSpecW(find_data.cFileName, L"*")) {
-                WCHAR wdest_path[MAX_PATH];
-                MultiByteToWideChar(CP_UTF8, 0, options->pattern, -1, wdest_path, MAX_PATH);
-                if (PathMatchSpecW(find_data.cFileName, wdest_path)) {
+                /* Split pattern by ',' and try to match each pattern | 按','分割模式并尝试匹配每个模式 */
+                char pattern_copy[MAX_PATH];
+                strncpy(pattern_copy, options->pattern, MAX_PATH - 1);
+                pattern_copy[MAX_PATH - 1] = '\0';
+                
+                char* pattern_token = strtok(pattern_copy, ",");
+                bool matched = false;
+                
+                while (pattern_token != NULL) {
+                    WCHAR wpattern[MAX_PATH];
+                    MultiByteToWideChar(CP_UTF8, 0, pattern_token, -1, wpattern, MAX_PATH);
+                    
+                    if (PathMatchSpecW(find_data.cFileName, wpattern)) {
+                        matched = true;
+                        break;
+                    }
+                    pattern_token = strtok(NULL, ",");
+                }
+                
+                if (matched) {
                     if (!process_file(src_path, dest_path, options, stats)) {
                         success = false;
                     }
