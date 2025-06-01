@@ -10,15 +10,15 @@ set "config=%~dp0Config.ini"
 call :parseConfig "%config%" "VSTAR_XML_FILES" "%content%"
 :: Build arguments with -e flag using the parsed content
 call :setArgs "-e" "%content%" "%arguments%"
-echo %arguments%
+if defined arguments echo arguments:%arguments%
 
 :: Parse WORKSPACE_FOLDERS section from config
-call :parseConfig "%config%" "WORKSPACE_FOLDERS" "%content%"
+call :parseConfig "%config%" "WORKSPACE_BSW_FOLDERS" "%content%"
 :: Get list of .arxml files from the workspace folders
 call :getFileList "%content%" "%filelist%"
 :: Build arguments with -a flag using the file list
 call :setArgs "-a" "%filelist%" "%arguments%"
-echo %arguments%
+if defined arguments echo arguments:%arguments%
 
 :parseConfig <config> <section> <content>
 :: Function to parse a specific section from the config file
@@ -42,7 +42,8 @@ for /f "delims=" %%a in (%lconfig%) do (
     if "%%a"=="[%lsection%]" set "lactive=1"
 )
 :: Remove the leading comma from the collected content
-set "content=!lcontent:~1!"
+if defined lcontent set "content=!lcontent:~1!"
+set "content=!lcontent!"
 exit /b
 
 :setArgs <flag> <content> <arguments>
@@ -61,7 +62,7 @@ if defined lcontent (
     goto :setArgs_loop
 )
 :: Remove the leading space and store in output variable
-set "larguments=!larguments:~1!"
+if defined larguments set "larguments=!larguments:~1!"
 set "arguments=%larguments%"
 exit /b
 
@@ -73,8 +74,12 @@ if defined lfolders (
     :: Process each folder in the comma-separated list
     for /f "tokens=1* delims=," %%a in ("!lfolders!") do (
         set "lfolder=%%a"
+        :: 转换为完整路径
+        for %%P in ("!lfolder!") do set "lfolder=%%~fP"
+        :: 添加路径结尾的反斜杠确保路径格式正确
+        if not "!lfolder:~-1!"=="\" set "lfolder=!lfolder!\"
         :: Recursively find all .arxml files in current folder
-        for /r %lfolder% %%F in (*.arxml) do (
+        for /f "delims=" %%F in ('dir /b /s "!lfolder!*.arxml" ^2^>nul') do (
             set "file=%%F"
             set "filelist=!filelist!,!file!"
         )
@@ -83,5 +88,5 @@ if defined lfolders (
     goto :getFileList_loop
 )
 :: Remove the leading comma from the file list
-set "filelist=!filelist:~1!"
+if defined filelist set "filelist=!filelist:~1!"
 exit /b
