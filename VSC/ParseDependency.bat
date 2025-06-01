@@ -74,9 +74,9 @@ if defined lfolders (
     :: Process each folder in the comma-separated list
     for /f "tokens=1* delims=," %%a in ("!lfolders!") do (
         set "lfolder=%%a"
-        :: 转换为完整路径
+        :: Convert to absolute path
         for %%P in ("!lfolder!") do set "lfolder=%%~fP"
-        :: 添加路径结尾的反斜杠确保路径格式正确
+        :: Add trailing backslash to ensure correct path format
         if not "!lfolder:~-1!"=="\" set "lfolder=!lfolder!\"
         :: Recursively find all .arxml files in current folder
         for /f "delims=" %%F in ('dir /b /s "!lfolder!*.arxml" ^2^>nul') do (
