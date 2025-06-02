@@ -26,17 +26,21 @@ exit /b 0
 
 :parseConfig <config> <section> <content>
 :: Function to parse a specific section from the config file
+:: Parameters:
+::   config - The path to the config file
+::   section - The section name to parse
+::   content - The variable name to store the parsed content
 setlocal enabledelayedexpansion
 set "config=%~1"
 set "section=%~2"
 set "content="
-set "lactive=0"
+set "active=0"
 for /f "delims=" %%a in (%config%) do (
     set "line=%%a"
-    if "!lactive!"=="1" (
+    if "!active!"=="1" (
         :: Check if current line starts with [, indicating a new section
         if "!line:~0,1!"=="[" (
-            set "lactive=0"
+            set "active=0"
         ) else (
             :: Append the line to content with comma separator
             set "content=!content!,!line!"
@@ -44,7 +48,7 @@ for /f "delims=" %%a in (%config%) do (
     )
 
     :: Check if current line matches the desired section header
-    if "%%a"=="[%section%]" set "lactive=1"
+    if "%%a"=="[%section%]" set "active=1"
 )
 :: Remove the leading comma from the collected content
 if defined content set "content=!content:~1!"
@@ -53,6 +57,10 @@ exit /b 0
 
 :setArgs <flag> <content> <arguments>
 :: Function to build command line arguments with a specific flag
+:: Parameters:
+::   flag - The command line flag to use
+::   content - The comma-separated list of items
+::   arguments - The variable name to store the built arguments
 setlocal enabledelayedexpansion
 set "flag=%~1"
 set "content=%~2"
@@ -74,6 +82,9 @@ exit /b 0
 
 :getFileList <folders> <filelist>
 :: Function to recursively find all .arxml files in given folders
+:: Parameters:
+::   folders - The comma-separated list of folder paths
+::   filelist - The variable name to store the list of found files
 setlocal enabledelayedexpansion
 set "folders=%~1"
 :getFileList_loop
