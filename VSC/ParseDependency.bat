@@ -7,13 +7,13 @@ setlocal enabledelayedexpansion
 :: Get the path to Config.ini in the same directory as the batch file
 set "config=%~dp0Config.ini"
 :: Parse VSTAR_XML_FILES section from config and store in content variable
-call :parseConfig "%config%" "VSTAR_XML_FILES" "%content%"
+call :parseConfig "%config%" "VSTAR_XML_FILES" "content"
 :: Build arguments with -e flag using the parsed content
 call :setArgs "-e" "%content%" "arguments"
 if defined arguments echo arguments:%arguments%
 
 :: Parse WORKSPACE_FOLDERS section from config
-call :parseConfig "%config%" "WORKSPACE_BSW_FOLDERS" "%content%"
+call :parseConfig "%config%" "WORKSPACE_BSW_FOLDERS" "content"
 :: Get list of .arxml files from the workspace folders
 call :getFileList "%content%" "filelist"
 :: Build arguments with -a flag using the file list
@@ -23,13 +23,15 @@ if defined arguments echo arguments:%arguments%
 endlocal
 exit /b 0
 
+
 :parseConfig <config> <section> <content>
 :: Function to parse a specific section from the config file
-set "lconfig=%~1"
-set "lsection=%~2"
-set "lcontent="
+setlocal enabledelayedexpansion
+set "config=%~1"
+set "section=%~2"
+set "content="
 set "lactive=0"
-for /f "delims=" %%a in (%lconfig%) do (
+for /f "delims=" %%a in (%config%) do (
     set "line=%%a"
     if "!lactive!"=="1" (
         :: Check if current line starts with [, indicating a new section
@@ -37,17 +39,17 @@ for /f "delims=" %%a in (%lconfig%) do (
             set "lactive=0"
         ) else (
             :: Append the line to content with comma separator
-            set "lcontent=!lcontent!,!line!"
+            set "content=!content!,!line!"
         )
     )
 
     :: Check if current line matches the desired section header
-    if "%%a"=="[%lsection%]" set "lactive=1"
+    if "%%a"=="[%section%]" set "lactive=1"
 )
 :: Remove the leading comma from the collected content
-if defined lcontent set "content=!lcontent:~1!"
-set "content=!lcontent!"
-exit /b
+if defined content set "content=!content:~1!"
+endlocal & set "%~3=%content%"
+exit /b 0
 
 :setArgs <flag> <content> <arguments>
 :: Function to build command line arguments with a specific flag
