@@ -15,7 +15,7 @@ if defined arguments echo arguments:%arguments%
 :: Parse WORKSPACE_FOLDERS section from config
 call :parseConfig "%config%" "WORKSPACE_BSW_FOLDERS" "%content%"
 :: Get list of .arxml files from the workspace folders
-call :getFileList "%content%" "%filelist%"
+call :getFileList "%content%" "filelist"
 :: Build arguments with -a flag using the file list
 call :setArgs "-a" "%filelist%" "arguments"
 if defined arguments echo arguments:%arguments%
@@ -72,25 +72,27 @@ exit /b 0
 
 :getFileList <folders> <filelist>
 :: Function to recursively find all .arxml files in given folders
-set "lfolders=%~1"
+setlocal enabledelayedexpansion
+set "folders=%~1"
 :getFileList_loop
-if defined lfolders (
+if defined folders (
     :: Process each folder in the comma-separated list
-    for /f "tokens=1* delims=," %%a in ("!lfolders!") do (
-        set "lfolder=%%a"
+    for /f "tokens=1* delims=," %%a in ("!folders!") do (
+        set "folder=%%a"
         :: Convert to absolute path
-        for %%P in ("!lfolder!") do set "lfolder=%%~fP"
+        for %%P in ("!folder!") do set "folder=%%~fP"
         :: Add trailing backslash to ensure correct path format
-        if not "!lfolder:~-1!"=="\" set "lfolder=!lfolder!\"
+        if not "!folder:~-1!"=="\" set "folder=!folder!\"
         :: Recursively find all .arxml files in current folder
-        for /f "delims=" %%F in ('dir /b /s "!lfolder!*.arxml" ^2^>nul') do (
+        for /f "delims=" %%F in ('dir /b /s "!folder!*.arxml" ^2^>nul') do (
             set "file=%%F"
             set "filelist=!filelist!,!file!"
         )
-        set "lfolders=%%b"
+        set "folders=%%b"
     )
     goto :getFileList_loop
 )
 :: Remove the leading comma from the file list
 if defined filelist set "filelist=!filelist:~1!"
-exit /b
+endlocal & set "%~2=%filelist%"
+exit /b 0
