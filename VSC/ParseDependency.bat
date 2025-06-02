@@ -9,7 +9,7 @@ set "config=%~dp0Config.ini"
 :: Parse VSTAR_XML_FILES section from config and store in content variable
 call :parseConfig "%config%" "VSTAR_XML_FILES" "%content%"
 :: Build arguments with -e flag using the parsed content
-call :setArgs "-e" "%content%" "%arguments%"
+call :setArgs "-e" "%content%" "arguments"
 if defined arguments echo arguments:%arguments%
 
 :: Parse WORKSPACE_FOLDERS section from config
@@ -17,8 +17,11 @@ call :parseConfig "%config%" "WORKSPACE_BSW_FOLDERS" "%content%"
 :: Get list of .arxml files from the workspace folders
 call :getFileList "%content%" "%filelist%"
 :: Build arguments with -a flag using the file list
-call :setArgs "-a" "%filelist%" "%arguments%"
+call :setArgs "-a" "%filelist%" "arguments"
 if defined arguments echo arguments:%arguments%
+
+endlocal
+exit /b 0
 
 :parseConfig <config> <section> <content>
 :: Function to parse a specific section from the config file
@@ -48,23 +51,24 @@ exit /b
 
 :setArgs <flag> <content> <arguments>
 :: Function to build command line arguments with a specific flag
-set "lflag=%~1"
-set "lcontent=%~2"
-set "larguments="
+setlocal enabledelayedexpansion
+set "flag=%~1"
+set "content=%~2"
+set "arguments="
 :setArgs_loop
-if defined lcontent (
+if defined content (
     :: Process each item in the comma-separated list
-    for /f "tokens=1* delims=," %%a in ("!lcontent!") do (
+    for /f "tokens=1* delims=," %%a in ("!content!") do (
         :: Add flag and item to arguments string
-        set "larguments=!larguments! %lflag% %%a"
-        set "lcontent=%%b"
+        set "arguments=!arguments! %flag% %%a"
+        set "content=%%b"
     )
     goto :setArgs_loop
 )
 :: Remove the leading space and store in output variable
-if defined larguments set "larguments=!larguments:~1!"
-set "arguments=%larguments%"
-exit /b
+if defined arguments set "arguments=!arguments:~1!"
+endlocal & set "%~3=%arguments%"
+exit /b 0
 
 :getFileList <folders> <filelist>
 :: Function to recursively find all .arxml files in given folders
