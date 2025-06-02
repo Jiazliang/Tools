@@ -5,7 +5,7 @@ chcp 65001 > nul
 setlocal enabledelayedexpansion
 
 :: Set log file path
-set "logfile=output.log"
+set "logfile=.\output.log"
 
 :: Clear/create log file
 type nul > "%logfile%"
@@ -17,7 +17,7 @@ type nul > "%logfile%"
     echo line3
     call .\ticker.exe 1 5
     call .\ticker.exe 6 10
-) 2>&1 | powershell -command "$input | ForEach-Object { Write-Host $_; Add-Content -Path '%logfile%' -Value $_ -Encoding UTF8 }"
+) 2>&1 | powershell -command "$logfile = \"%logfile%\"; $input | ForEach-Object { try { Write-Host $_; Add-Content -Path $logfile -Value $_ -Encoding UTF8 } catch { Write-Host \"Log write failed: $_\" } }"
 
 endlocal
 exit /b  0
