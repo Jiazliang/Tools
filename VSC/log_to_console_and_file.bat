@@ -1,4 +1,7 @@
 @echo off
+:: Set UTF-8 encoding to support special characters
+chcp 65001 > nul
+:: Enable delayed variable expansion for proper variable handling in loops
 setlocal enabledelayedexpansion
 
 :: Set log file path
@@ -8,6 +11,7 @@ set "logfile=output.log"
 type nul > "%logfile%"
 
 (
+    dir /b /s "..\VSC_testbench\SWConfig\*.arxml"
     echo line1
     echo line2
     echo line3
